@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+HydraMVC - Copyright (c) 2009 andCulture, Inc. Some rights reserved.
+Your reuse is governed by the Creative Commons Attribution 3.0 United States License    
+-->    
+<mx:Canvas
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="handleInitialize(event)"
+	xmlns:flexlib="http://code.google.com/p/flexlib/">
+	<mx:Script>
+		<![CDATA[
+			import com.hydraframework.components.growler.view.components.BaseGrowl;
+			import com.hydraframework.components.growler.view.events.GrowlEvent;
+			import com.hydraframework.components.growler.model.GrowlDescriptor;
+			import com.hydraframework.core.mvc.interfaces.IFacade;
+			
+			public var facade:IFacade;
+			public static const NAME:String = "Growler";
+			private var componentID:String = NAME + new Date().time;
+
+			public var growlerClass:Class = BaseGrowl;
+			public var horizontalGap:Number = 5;
+			public var verticalGap:Number = 5;
+			public var growlWidth:Number = 0;
+			public var growlHeight:Number = 0;
+			
+			public function get isGrowling():Boolean
+			{
+				return this.numChildren > 0;
+			}
+			
+			private function handleInitialize(event:Event):void
+			{
+				this.facade = new GrowlFacade(componentID, this);
+			}
+
+			public function draw():void
+			{
+				var childrenHeight:Number = 0;
+				var child:BaseGrowl;
+				var lastLivingChildIndex:int = -1;
+				var i:int;
+				
+				for(i = 0; i < this.numChildren; i++)
+				{
+					child = this.getChildAt(i) as BaseGrowl;
+					if(child.isAlive)
+					{
+						lastLivingChildIndex = i;
+					}
+					childrenHeight += child.height;
+					if(growlWidth == 0) growlWidth = child.width + horizontalGap;
+					if(growlHeight == 0) growlHeight = child.height + verticalGap;
+				}
+				i = this.numChildren - 1;
+				while(i > lastLivingChildIndex)
+				{
+					this.removeChildAt(i);
+					i = this.numChildren - 1;
+				}
+			}
+			
+			public function layout():void
+			{
+				var numColumns:int;
+				var numRows:int;
+				numRows = Math.floor(this.height / growlHeight);
+				numColumns = Math.floor((this.numChildren - 1) / numRows);
+				
+				this.width = numColumns * growlWidth + growlWidth;
+				
+				var i:int;
+				var child:BaseGrowl;
+				for(i = 0; i < this.numChildren; i++)
+				{
+					child = this.getChildAt(i) as BaseGrowl;
+					child.x = numColumns * growlWidth - Math.ceil((i + 1) / numRows) * growlWidth + growlWidth;
+					child.y = (i % numRows) * growlHeight;
+				}
+			}
+			
+			public function addGrowl(growlDescriptor:GrowlDescriptor):void
+			{
+				var growl:BaseGrowl = new growlerClass() as BaseGrowl;
+				growl.growl = growlDescriptor;
+				growl.addEventListener(GrowlEvent.CLOSE, handleGrowlEvent);
+				this.addChild(growl);
+				draw();
+				layout();
+			}
+			
+			private function handleGrowlEvent(event:GrowlEvent):void
+			{
+				switch(event.type)
+				{
+					case GrowlEvent.CLOSE:
+					{
+						(event.target as BaseGrowl).removeEventListener(GrowlEvent.CLOSE, handleGrowlEvent);
+						draw();
+						layout();
+					}
+					break;
+				}
+			}
+			
+			public function growl(growlDescriptor:GrowlDescriptor):void
+			{
+				this.dispatchEvent(new GrowlEvent(GrowlEvent.GROWL, growlDescriptor));
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

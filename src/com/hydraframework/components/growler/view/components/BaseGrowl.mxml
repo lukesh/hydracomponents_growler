@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+HydraMVC - Copyright (c) 2009 andCulture, Inc. Some rights reserved.
+Your reuse is governed by the Creative Commons Attribution 3.0 United States License    
+-->    
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	backgroundAlpha="1" backgroundColor="0xE7E7E7"
+	width="215"
+	height="115"
+	initialize="handleInitialize(event)"
+	>
+	<mx:Script>
+		<![CDATA[
+			import com.hydraframework.components.growler.view.events.GrowlEvent;
+			import com.hydraframework.components.growler.model.GrowlDescriptor;
+			import flash.utils.clearTimeout;
+			import flash.utils.setTimeout;
+			
+			private var fadeTimeoutIndex:uint;
+
+			[Bindable]
+			public var growl:GrowlDescriptor;
+
+			public var fadeDuration:int = 1000;
+			public var fadeTimeout:int = 3000;
+			public var isAlive:Boolean = true;
+			
+			public function close():void
+			{
+				clearTimeout(fadeTimeoutIndex);
+				this.alpha = 0;
+				this.startFade();
+			}
+			
+			protected function dispatchCloseEvent():void
+			{
+				isAlive = false;
+				this.removeEventListener(Event.ENTER_FRAME, handleEnterFrame);
+				this.removeEventListener(MouseEvent.MOUSE_OVER, handleMouseEvent);
+				this.removeEventListener(MouseEvent.MOUSE_OUT, handleMouseEvent);
+				this.dispatchEvent(new GrowlEvent(GrowlEvent.CLOSE));
+			}
+			
+			protected function startFade():void
+			{
+				this.addEventListener(Event.ENTER_FRAME, handleEnterFrame);	
+			}
+			
+			protected function handleInitialize(event:Event):void
+			{
+				this.addEventListener(MouseEvent.MOUSE_OVER, handleMouseEvent);
+				this.addEventListener(MouseEvent.MOUSE_OUT, handleMouseEvent);
+				startFadeTimeout();
+			}
+			
+			protected function startFadeTimeout():void
+			{
+				fadeTimeoutIndex = setTimeout(startFade, fadeTimeout);
+			}
+			
+			protected function stopFadeTimeout():void
+			{
+				
+				this.removeEventListener(Event.ENTER_FRAME, handleEnterFrame);
+				this.alpha = 1;
+				clearTimeout(fadeTimeoutIndex);
+			}
+			
+			private function handleMouseEvent(event:MouseEvent):void
+			{
+				switch(event.type)
+				{
+					case MouseEvent.MOUSE_OVER:
+					{
+						stopFadeTimeout();						
+					}
+					break;
+					case MouseEvent.MOUSE_OUT:
+					{
+						startFadeTimeout();
+					}
+					break;
+				}
+			}
+			
+			private function handleEnterFrame(event:Event):void
+			{
+				
+				if(this.alpha > 0)
+				{
+					this.alpha -= 1 / ((fadeDuration * 0.001) * (this.stage ? this.stage.frameRate : 30));
+				}
+				else
+				{
+					this.alpha = 0;
+					this.dispatchCloseEvent();
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</mx:Canvas>

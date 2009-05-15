@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flexLibProperties version="1">
+<includeClasses>
+<classEntry path="com.hydraframework.components.growler.GrowlFacade"/>
+<classEntry path="com.hydraframework.components.growler.Growler"/>
+<classEntry path="com.hydraframework.components.growler.controller.GrowlCommand"/>
+<classEntry path="com.hydraframework.components.growler.controller.GrowlDisplayCommand"/>
+<classEntry path="com.hydraframework.components.growler.model.GrowlDescriptor"/>
+<classEntry path="com.hydraframework.components.growler.model.GrowlProxy"/>
+<classEntry path="com.hydraframework.components.growler.view.GrowlMediator"/>
+<classEntry path="com.hydraframework.components.growler.view.components.BaseGrowl"/>
+<classEntry path="com.hydraframework.components.growler.view.events.GrowlEvent"/>
+</includeClasses>
+<includeResources/>
+<namespaceManifests/>
+</flexLibProperties>
