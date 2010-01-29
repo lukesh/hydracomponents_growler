@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 HydraMVC - Copyright (c) 2009 andCulture, Inc. Some rights reserved.
-Your reuse is governed by the Creative Commons Attribution 3.0 United States License    
+Your reuse is governed by the MIT License (http://www.opensource.org/licenses/mit-license.php)    
 -->    
 <mx:Canvas 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
